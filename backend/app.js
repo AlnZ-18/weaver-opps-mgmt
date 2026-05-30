@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const { AppError, errorHandler } = require('./middleware/errorMiddleware');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
@@ -54,6 +55,9 @@ app.use('/uploads', express.static('uploads'));
 // ==========================================
 // 4. Core System & Routing Endpoints
 // ==========================================
+
+// Mount Authentication routes
+app.use('/api/auth', authRoutes);
 
 // Health Check Endpoint (useful for cloud orchestrators, container monitoring, or simple verification)
 app.get('/api/health', (req, res) => {
