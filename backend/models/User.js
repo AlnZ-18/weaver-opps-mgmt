@@ -74,7 +74,5 @@ UserSchema.methods.generateJWT = function () {
   );
 };
 
-// Add indexes for optimal query execution
-UserSchema.index({ email: 1 });
 
 module.exports = mongoose.model('User', UserSchema);
