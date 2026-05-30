@@ -3,12 +3,12 @@ const User = require('../models/User');
 const { AppError } = require('./errorMiddleware');
 
 /**
- * Middleware to protect routes: verifies JSON Web Token (JWT)
+ * Middleware to verify JWT and attach user object to req.user (Protect private routes)
  */
-const protect = async (req, res, next) => {
+const authenticateUser = async (req, res, next) => {
   let token;
 
-  // Check for Bearer token in the Authorization header
+  // Extract Bearer token from Authorization header
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
@@ -18,7 +18,7 @@ const protect = async (req, res, next) => {
 
   if (!token) {
     return next(
-      new AppError('Access Denied: Please provide a valid Bearer authentication token to access this resource.', 401)
+      new AppError('Access Denied: Please provide a valid Bearer authentication token to access this private resource.', 401)
     );
   }
 
@@ -44,28 +44,27 @@ const protect = async (req, res, next) => {
 };
 
 /**
- * Middleware to restrict route access to specific user roles (RBAC)
- * @param {...string} roles - Array of allowed roles (e.g. 'admin', 'user')
+ * Middleware to restrict route access strictly to administrator users (Restrict admin routes)
  */
-const restrictTo = (...roles) => {
-  return (req, res, next) => {
-    if (!req.user) {
-      return next(
-        new AppError('Authorization failed: User identity context was not found. Ensure route is protected.', 500)
-      );
-    }
+const authorizeAdmin = (req, res, next) => {
+  // authenticateUser middleware must be executed first to populate req.user
+  if (!req.user) {
+    return next(
+      new AppError('Authorization failed: User identity context was not found. Ensure route is protected by authenticateUser first.', 500)
+    );
+  }
 
-    if (!roles.includes(req.user.role)) {
-      return next(
-        new AppError('Access Denied: You do not have permissions to perform this action.', 403)
-      );
-    }
+  // Restrict to admin role
+  if (req.user.role !== 'admin') {
+    return next(
+      new AppError('Access Denied: Administrative permissions are required to access this resource.', 403)
+    );
+  }
 
-    next();
-  };
+  next();
 };
 
 module.exports = {
-  protect,
-  restrictTo,
+  authenticateUser,
+  authorizeAdmin,
 };
