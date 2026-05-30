@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const { AppError, errorHandler } = require('./middleware/errorMiddleware');
 const authRoutes = require('./routes/authRoutes');
 const opportunityRoutes = require('./routes/opportunityRoutes');
+const applicationRoutes = require('./routes/applicationRoutes');
 
 const app = express();
 
@@ -60,6 +61,7 @@ app.use('/uploads', express.static('uploads'));
 // Mount Authentication routes
 app.use('/api/auth', authRoutes);
 app.use('/api/opportunities', opportunityRoutes);
+app.use('/api/applications', applicationRoutes);
 
 // Health Check Endpoint (useful for cloud orchestrators, container monitoring, or simple verification)
 app.get('/api/health', (req, res) => {
