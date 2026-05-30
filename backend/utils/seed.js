@@ -14,8 +14,8 @@ const seedAdmin = async () => {
     console.log('[Seeder] Database connection established.');
 
     // 2. Sample Admin Credentials
-    const adminEmail = 'admin.amaravati@aiesec.net';
-    const adminPassword = 'AdminPassword123!'; // Passwords will be automatically encrypted by pre-save schema hooks
+    const adminEmail = 'admin@aiesecamaravati.org';
+    const adminPassword = 'Admin@123'; // Passwords will be automatically encrypted by pre-save schema hooks
     
     // 3. Check for existing administrators
     const existingAdmin = await User.findOne({ email: adminEmail });
@@ -27,7 +27,7 @@ const seedAdmin = async () => {
 
     // 4. Create new administrator user
     await User.create({
-      name: 'AIESEC Amaravati Admin',
+      name: 'Admin',
       email: adminEmail,
       password: adminPassword,
       role: 'admin',
