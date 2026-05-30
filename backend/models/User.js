@@ -112,7 +112,6 @@ UserSchema.methods.comparePassword = async function (enteredPassword) {
 };
 
 // Add indexes for optimal query execution
-UserSchema.index({ email: 1 });
 UserSchema.index({ 'profile.university': 1 });
 
 module.exports = mongoose.model('User', UserSchema);
