@@ -1,35 +1,36 @@
 const mongoose = require('mongoose');
 
 const ApplicationSchema = new mongoose.Schema({
-  student: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: [true, 'Application must be linked to a student'],
+    required: [true, 'Application must be linked to a user account'],
   },
-  opportunity: {
+  opportunityId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Opportunity',
-    required: [true, 'Application must be linked to an opportunity'],
-  },
-  resumeSnapshotUrl: {
-    type: String,
-    required: [true, 'A resume snapshot is required at the time of application'],
+    required: [true, 'Application must be linked to an exchange opportunity'],
   },
   status: {
     type: String,
-    enum: ['applied', 'reviewing', 'interviewing', 'accepted', 'rejected'],
-    default: 'applied',
+    enum: {
+      values: ['Applied', 'Under Review', 'Accepted', 'Rejected'],
+      message: '{VALUE} is not a valid application status.'
+    },
+    default: 'Applied',
+    required: [true, 'Application status is required'],
   },
+  // Audit log of state changes for robust administrative tracking
   statusHistory: [
     {
       status: {
         type: String,
-        enum: ['applied', 'reviewing', 'interviewing', 'accepted', 'rejected'],
+        enum: ['Applied', 'Under Review', 'Accepted', 'Rejected'],
         required: true,
       },
       updatedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // Admin who transitioned the state
+        ref: 'User',
         required: true,
       },
       updatedAt: {
@@ -47,8 +48,8 @@ const ApplicationSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-// Enforce unique application constraints (A student can apply to a specific opportunity only once)
-ApplicationSchema.index({ student: 1, opportunity: 1 }, { unique: true });
+// CRITICAL: Unique compound index to prevent duplicate applications from the same user for the same opportunity
+ApplicationSchema.index({ userId: 1, opportunityId: 1 }, { unique: true });
 ApplicationSchema.index({ status: 1 });
 
 module.exports = mongoose.model('Application', ApplicationSchema);
