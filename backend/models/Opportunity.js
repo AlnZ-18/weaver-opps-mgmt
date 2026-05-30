@@ -7,72 +7,62 @@ const OpportunitySchema = new mongoose.Schema({
     trim: true,
     maxlength: [100, 'Title cannot exceed 100 characters'],
   },
-  description: {
-    type: String,
-    required: [true, 'Please provide an opportunity description'],
-  },
-  type: {
+  programType: {
     type: String,
     enum: {
       values: ['GTa', 'GV'], // GTa: Global Talent, GV: Global Volunteer
-      message: '{VALUE} is not a valid exchange type. Must be either GTa or GV.',
+      message: '{VALUE} is not a valid program type. Must be either GTa or GV.',
     },
-    required: [true, 'Please specify exchange type (GTa/GV)'],
+    required: [true, 'Please specify program type (GTa/GV)'],
   },
-  subType: {
-    type: String, // e.g. Business Administration, Teaching, SDG 4: Quality Education
-    required: [true, 'Please specify exchange sub-type/theme'],
+  country: {
+    type: String,
+    required: [true, 'Please specify the country location'],
     trim: true,
   },
-  location: {
-    type: String, // e.g. Budapest, Hungary
-    required: [true, 'Please specify the exchange location'],
+  city: {
+    type: String,
+    required: [true, 'Please specify the city location'],
+    trim: true,
+  },
+  description: {
+    type: String,
+    required: [true, 'Please provide a program description'],
+  },
+  stipend: {
+    type: String, // E.g., "Unpaid", "$500 USD/month" to allow flexible descriptions
+    required: [true, 'Please specify stipend or unpaid status'],
     trim: true,
   },
   duration: {
-    type: Number, // Duration in weeks (e.g. 6, 12, 24)
-    required: [true, 'Please specify opportunity duration in weeks'],
+    type: Number, // Duration in weeks (e.g., 6 weeks, 24 weeks)
+    required: [true, 'Please specify the program duration in weeks'],
     min: [2, 'Duration must be at least 2 weeks'],
   },
-  salary: {
-    type: String, // e.g. "Unpaid", "$400 USD/month"
-    default: 'Unpaid',
-    trim: true,
-  },
-  vacancies: {
-    type: Number,
-    required: [true, 'Please specify the number of vacancies available'],
-    min: [1, 'Must have at least 1 vacancy'],
-    default: 1,
-  },
-  requirements: {
+  skillsRequired: {
     type: [String],
     default: [],
   },
-  responsibilities: {
-    type: [String],
-    default: [],
+  applicationDeadline: {
+    type: Date,
+    required: [true, 'Please specify the application deadline date'],
   },
   status: {
     type: String,
-    enum: ['open', 'closed'],
-    default: 'open',
+    enum: ['Open', 'Closed'],
+    default: 'Open',
   },
-  deadline: {
-    type: Date,
-    required: [true, 'Please specify an application deadline date'],
-  },
-  creator: {
+  createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Refers to the Admin user who published it
-    required: [true, 'Opportunity must be linked to an admin creator'],
+    ref: 'User', // Administrative creator link
+    required: [true, 'Opportunity must be linked to an admin creator account'],
   },
 }, {
   timestamps: true,
 });
 
-// Configure compound indexes to query open GV or GTa records efficiently
-OpportunitySchema.index({ type: 1, status: 1 });
-OpportunitySchema.index({ deadline: 1 });
+// Compound indexes for performant query lookups in application streams
+OpportunitySchema.index({ programType: 1, status: 1 });
+OpportunitySchema.index({ applicationDeadline: 1 });
 
 module.exports = mongoose.model('Opportunity', OpportunitySchema);
