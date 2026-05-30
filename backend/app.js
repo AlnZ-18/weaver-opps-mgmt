@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const { AppError, errorHandler } = require('./middleware/errorMiddleware');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
@@ -47,6 +48,9 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 // ==========================================
 // 3. Static Files & System Routing
 // ==========================================
+
+// Mount Authentication API routes
+app.use('/api/auth', authRoutes);
 
 // Serve local static files under /uploads fallback
 app.use('/uploads', express.static('uploads'));
