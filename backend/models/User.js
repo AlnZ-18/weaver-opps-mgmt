@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Please provide your full name'],
+    required: [true, 'Please provide a name'],
     trim: true,
   },
   email: {
@@ -26,61 +27,8 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['student', 'admin'],
-    default: 'student',
-  },
-  profile: {
-    university: {
-      type: String,
-      enum: {
-        values: [
-          'VIT AP',
-          'SRM AP',
-          'KL University',
-          'Amrita Amaravati',
-          'Acharya Nagarjuna University',
-          'RVR & JC',
-          'Vignan University',
-          'VVIT',
-          'Others'
-        ],
-        message: '{VALUE} is not a recognized university'
-      },
-      required: function () {
-        return this.role === 'student';
-      },
-    },
-    phone: {
-      type: String,
-      required: function () {
-        return this.role === 'student';
-      },
-      trim: true,
-    },
-    currentDegree: {
-      type: String,
-      trim: true,
-    },
-    graduationYear: {
-      type: Number,
-    },
-    resumeUrl: {
-      type: String,
-      default: '',
-    },
-    resumePublicId: {
-      type: String,
-      default: '',
-    },
-    skills: {
-      type: [String],
-      default: [],
-    },
-    bio: {
-      type: String,
-      trim: true,
-      maxlength: [500, 'Bio cannot exceed 500 characters'],
-    },
+    enum: ['user', 'admin'],
+    default: 'user',
   },
 }, {
   timestamps: true,
@@ -111,7 +59,21 @@ UserSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
+/**
+ * Generate a signed JWT token containing the user ID as the payload
+ * @returns {string} signed JWT token
+ */
+UserSchema.methods.generateJWT = function () {
+  return jwt.sign(
+    { id: this._id }, 
+    process.env.JWT_SECRET || 'default_jwt_secret_key', 
+    {
+      expiresIn: process.env.JWT_EXPIRE || '24h',
+    }
+  );
+};
+
 // Add indexes for optimal query execution
-UserSchema.index({ 'profile.university': 1 });
+UserSchema.index({ email: 1 });
 
 module.exports = mongoose.model('User', UserSchema);
