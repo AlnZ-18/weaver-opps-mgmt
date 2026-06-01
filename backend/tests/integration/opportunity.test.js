@@ -293,4 +293,72 @@ describe('📋 Opportunity CRUD API Integration Tests', () => {
       expect(res.body.success).toBe(false);
     });
   });
+
+  // ==========================================
+  // 5. PUBLIC OPPORTUNITIES RETRIEVAL
+  // ==========================================
+  describe('Public Opportunity GET API Endpoints', () => {
+    it('✓ should allow anyone (unauthenticated) to fetch open opportunities with pagination and sorting', async () => {
+      const { admin } = await createAdmin();
+      // Seed open and closed opportunities
+      await createOpportunity(admin._id, { title: 'Open Talent 1', status: 'Open' });
+      await createOpportunity(admin._id, { title: 'Open Talent 2', status: 'Open' });
+      await createOpportunity(admin._id, { title: 'Closed Volunteer', status: 'Closed' });
+
+      const res = await request(app)
+        .get('/api/opportunities')
+        .query({ page: 1, limit: 10 });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.opportunities).toBeDefined();
+      expect(res.body.pagination).toBeDefined();
+      expect(res.body.pagination.total).toBeGreaterThanOrEqual(2);
+
+      // Verify only 'Open' opportunities are returned
+      res.body.opportunities.forEach((opp) => {
+        expect(opp.status).toBe('Open');
+      });
+    });
+
+    it('✓ should filter public opportunities by programType if specified', async () => {
+      const { admin } = await createAdmin();
+      await createOpportunity(admin._id, { title: 'Open GTa Placement', programType: 'GTa', status: 'Open' });
+      await createOpportunity(admin._id, { title: 'Open GV Placement', programType: 'GV', status: 'Open' });
+
+      const res = await request(app)
+        .get('/api/opportunities')
+        .query({ programType: 'GTa' });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.opportunities.length).toBeGreaterThanOrEqual(1);
+      res.body.opportunities.forEach((opp) => {
+        expect(opp.programType).toBe('GTa');
+      });
+    });
+
+    it('✓ should allow anyone to fetch a single opportunity\'s full details', async () => {
+      const { admin } = await createAdmin();
+      const opportunity = await createOpportunity(admin._id, { title: 'Full Details Placement' });
+
+      const res = await request(app)
+        .get(`/api/opportunities/${opportunity._id}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.opportunity).toBeDefined();
+      expect(res.body.opportunity.title).toBe('Full Details Placement');
+      expect(res.body.opportunity.createdBy.name).toBe(admin.name);
+    });
+
+    it('✓ should return 404 when querying an opportunity details that does not exist', async () => {
+      const nonExistentId = new mongoose.Types.ObjectId();
+
+      const res = await request(app)
+        .get(`/api/opportunities/${nonExistentId}`);
+
+      expect(res.statusCode).toBe(404);
+      expect(res.body.success).toBe(false);
+    });
+  });
 });

@@ -119,9 +119,78 @@ const getAdminAllOpportunities = async (req, res, next) => {
   }
 };
 
+/**
+ * @desc    Get all exchange opportunities (Public list: status = Open only, paginated, sorted by latest)
+ * @route   GET /api/opportunities
+ * @access  Public (No Auth Required)
+ */
+const getPublicOpportunities = async (req, res, next) => {
+  try {
+    // 1. Pagination parameters
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const skip = (page - 1) * limit;
+
+    // 2. Base query: only Open placements
+    const query = { status: 'Open' };
+
+    // Optional category filters (programType: GTa or GV)
+    if (req.query.programType) {
+      query.programType = req.query.programType;
+    }
+
+    const total = await Opportunity.countDocuments(query);
+    const opportunities = await Opportunity.find(query)
+      .populate('createdBy', 'name email')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    res.status(200).json({
+      success: true,
+      count: opportunities.length,
+      pagination: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit),
+      },
+      opportunities,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @desc    Get single exchange opportunity full details
+ * @route   GET /api/opportunities/:id
+ * @access  Public (No Auth Required)
+ */
+const getPublicOpportunityById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const opportunity = await Opportunity.findById(id).populate('createdBy', 'name email');
+
+    if (!opportunity) {
+      return next(new AppError('No exchange opportunity was found with the specified identifier.', 404));
+    }
+
+    res.status(200).json({
+      success: true,
+      opportunity,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createOpportunity,
   updateOpportunity,
   deleteOpportunity,
   getAdminAllOpportunities,
+  getPublicOpportunities,
+  getPublicOpportunityById,
 };

@@ -4,11 +4,17 @@ const {
   updateOpportunity,
   deleteOpportunity,
   getAdminAllOpportunities,
+  getPublicOpportunities,
+  getPublicOpportunityById,
 } = require('../controllers/opportunityController');
 const { authenticateUser, authorizeAdmin } = require('../middleware/authMiddleware');
 const { validateOpportunity } = require('../middleware/validationMiddleware');
 
 const router = express.Router();
+
+// Public Endpoints (No Auth Required)
+router.get('/', getPublicOpportunities);
+router.get('/:id', getPublicOpportunityById);
 
 // Enforce authentication and administrative authorization globally for all Opportunity CRUD routes
 router.use(authenticateUser);
