@@ -21,6 +21,10 @@ yarn-error.log*
 logs/
 *.log
 
+# Coverage reporting
+coverage/
+backend/coverage/
+
 # Editor & OS files
 .DS_Store
 Thumbs.db
