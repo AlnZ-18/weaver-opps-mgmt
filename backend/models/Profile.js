@@ -66,7 +66,6 @@ const ProfileSchema = new mongoose.Schema({
 });
 
 // Create indexes
-ProfileSchema.index({ userId: 1 });
 ProfileSchema.index({ university: 1 });
 
 module.exports = mongoose.model('Profile', ProfileSchema);

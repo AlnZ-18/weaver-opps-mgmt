@@ -105,8 +105,81 @@ const updateProfile = async (req, res, next) => {
   }
 };
 
+const { cloudinary, isCloudinaryConfigured } = require('../config/cloudinary');
+
+/**
+ * @desc    Upload or update student PDF resume
+ * @route   POST /api/profile/upload-resume
+ * @access  Private
+ */
+const uploadResumeFile = async (req, res, next) => {
+  try {
+    // 1. Verify file was sent
+    if (!req.file) {
+      return next(new AppError('Please select a valid PDF file to upload.', 400));
+    }
+
+    // 2. Verify that the profile exists first
+    const profile = await Profile.findOne({ userId: req.user._id });
+    if (!profile) {
+      return next(new AppError('Profile not found. Please create your profile card before uploading a resume.', 404));
+    }
+
+    let resumeUrl = '';
+
+    // ==========================================
+    // 3. Cloudinary Upload Path (Active Cloud)
+    // ==========================================
+    if (isCloudinaryConfigured) {
+      // Helper function to upload buffer using write stream
+      const uploadFromBuffer = (fileBuffer) => {
+        return new Promise((resolve, reject) => {
+          const writeStream = cloudinary.uploader.upload_stream(
+            {
+              folder: 'aiesec_resumes',
+              resource_type: 'raw', // Treat PDF as raw file asset
+            },
+            (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            }
+          );
+          writeStream.write(fileBuffer);
+          writeStream.end();
+        });
+      };
+
+      // Execute upload
+      const uploadResult = await uploadFromBuffer(req.file.buffer);
+      resumeUrl = uploadResult.secure_url;
+    }
+    // ==========================================
+    // 4. Local Disk Storage Fallback
+    // ==========================================
+    else {
+      // Local URL structure
+      const hostUrl = `${req.protocol}://${req.get('host')}`;
+      resumeUrl = `${hostUrl}/uploads/${req.file.filename}`;
+    }
+
+    // 5. Update student's database profile references
+    profile.resumeUrl = resumeUrl;
+    profile.profileCompleted = !!(profile.phone && profile.university && profile.course && profile.graduationYear && profile.resumeUrl);
+    await profile.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Resume document uploaded and registered successfully.',
+      resumeUrl,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createProfile,
   getMyProfile,
   updateProfile,
+  uploadResumeFile,
 };
