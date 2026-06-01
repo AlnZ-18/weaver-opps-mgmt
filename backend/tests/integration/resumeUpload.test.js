@@ -140,4 +140,33 @@ describe('📁 Resume Upload API Integration Tests', () => {
     expect(res.body.message).toContain('Please provide a valid Bearer authentication token');
     expect(mockUploadStream).not.toHaveBeenCalled();
   });
+
+  it('✓ should reject resume uploads if no file is sent in the request', async () => {
+    const { token } = await createUser();
+
+    const res = await request(app)
+      .post('/api/profile/upload-resume')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.statusCode).toBe(400);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toContain('Please select a valid PDF file to upload');
+    expect(mockUploadStream).not.toHaveBeenCalled();
+  });
+
+  it('✓ should reject resume uploads if the user profile card does not exist yet', async () => {
+    const { token } = await createUser(); // Profile not created
+
+    const pdfBuffer = Buffer.from('%PDF-1.4 mock content');
+
+    const res = await request(app)
+      .post('/api/profile/upload-resume')
+      .set('Authorization', `Bearer ${token}`)
+      .attach('resume', pdfBuffer, 'resume.pdf');
+
+    expect(res.statusCode).toBe(404);
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toContain('Profile not found. Please create your profile card before uploading a resume');
+    expect(mockUploadStream).not.toHaveBeenCalled();
+  });
 });

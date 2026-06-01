@@ -8,12 +8,12 @@ module.exports = {
   // Enable test coverage gathering
   collectCoverage: true,
 
-  // Folders to target or ignore for coverage metrics
   collectCoverageFrom: [
     'controllers/**/*.js',
     'middleware/**/*.js',
     'models/**/*.js',
     'utils/**/*.js',
+    '!utils/seed.js',
     '!config/**/*.js',
     '!tests/**/*.js',
   ],

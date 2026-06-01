@@ -74,6 +74,23 @@ describe('🛡️ Authentication Middleware Unit Tests', () => {
       expect(errorPassed.statusCode).toBe(401);
       expect(errorPassed.message).toContain('Please provide a valid Bearer authentication token');
     });
+
+    it('✓ should reject requests if the user belonging to the token no longer exists in the database', async () => {
+      const { user, token } = await createUser();
+      const User = require('../../models/User');
+      
+      // Delete user from database to trigger non-existence case
+      await User.findByIdAndDelete(user._id);
+      
+      req.headers.authorization = `Bearer ${token}`;
+
+      await authenticateUser(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(expect.any(AppError));
+      const errorPassed = next.mock.calls[0][0];
+      expect(errorPassed.statusCode).toBe(401);
+      expect(errorPassed.message).toContain('session token no longer exists');
+    });
   });
 
   // ==========================================
