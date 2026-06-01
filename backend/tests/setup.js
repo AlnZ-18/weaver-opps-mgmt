@@ -22,14 +22,13 @@ beforeAll(async () => {
   await mongoose.connect(mongoUri);
 });
 
-/**
- * Lifecycle hook: Clean up and flush collections between each test run to ensure total isolation
- */
 afterEach(async () => {
-  const collections = mongoose.connection.collections;
-  for (const key in collections) {
-    const collection = collections[key];
-    await collection.deleteMany();
+  if (mongoose.connection.readyState === 1) {
+    const collections = mongoose.connection.collections;
+    for (const key in collections) {
+      const collection = collections[key];
+      await collection.deleteMany();
+    }
   }
 });
 
