@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const { AppError, errorHandler } = require('./middleware/errorMiddleware');
 const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+const opportunityRoutes = require('./routes/opportunityRoutes');
 
 const app = express();
 
@@ -50,9 +51,9 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 // 3. Static Files & System Routing
 // ==========================================
 
-// Mount Authentication API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/opportunities', opportunityRoutes);
 
 // Serve local static files under /uploads fallback
 app.use('/uploads', express.static('uploads'));
