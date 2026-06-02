@@ -44,3 +44,28 @@ export const fetchOpportunityById = async (id) => {
     throw error;
   }
 };
+
+/**
+ * Register a new user/admin account in the backend database
+ * @param {Object} payload
+ * @param {string} payload.name - Full name
+ * @param {string} payload.email - User email address
+ * @param {string} payload.password - Secure password
+ * @returns {Promise<Object>} API JSON response containing user details and signed token
+ */
+export const registerUser = async ({ name, email, password }) => {
+  try {
+    const response = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, email, password }),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('❌ API Error registering user:', error);
+    throw error;
+  }
+};
+
