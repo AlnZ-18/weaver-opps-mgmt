@@ -6,6 +6,7 @@ import OpportunityDetailsPage from './pages/OpportunityDetailsPage';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
+import AdminRoute from './components/AdminRoute';
 
 /**
  * Root Application Router & Session State Orchestrator
@@ -29,7 +30,14 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
 
           {/* Admin Placements Management Dashboard */}
-          <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+          <Route 
+            path="/admin/dashboard" 
+            element={
+              <AdminRoute>
+                <AdminDashboardPage />
+              </AdminRoute>
+            } 
+          />
 
           {/* Catch-all fallback redirect to home */}
           <Route path="*" element={<Navigate to="/" replace />} />
@@ -40,3 +48,4 @@ function App() {
 }
 
 export default App;
+
