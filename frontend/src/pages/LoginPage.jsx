@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { loginUser } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 
 function LoginPage() {
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   // --- States ---
@@ -11,8 +14,9 @@ function LoginPage() {
   });
 
   const [validationErrors, setValidationErrors] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
   const [success, setSuccess] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // --- Change Handler ---
   const handleChange = (e) => {
@@ -27,9 +31,10 @@ function LoginPage() {
         [name]: '',
       }));
     }
+    setApiError('');
   };
 
-  // --- Validate ---
+  // --- Input Validation ---
   const validateForm = () => {
     const errors = {};
     if (!formData.email) {
@@ -42,22 +47,43 @@ function LoginPage() {
     return Object.keys(errors).length === 0;
   };
 
-  // --- Submit stub ---
-  const handleSubmit = (e) => {
+  // --- Submit Handler ---
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setLoading(true);
+    setApiError('');
     setSuccess('');
-    
-    // Simulate successful login authentication
-    setTimeout(() => {
+
+    try {
+      const data = await loginUser({
+        email: formData.email.trim(),
+        password: formData.password,
+      });
+
+      if (data.success) {
+        setSuccess('Authentication successful! Logging you in...');
+        
+        // Update Auth Context (persists token and user including role in localStorage)
+        login(data.token, data.user);
+
+        // Redirect based strictly on role
+        setTimeout(() => {
+          if (data.user.role === 'admin') {
+            navigate('/admin/dashboard');
+          } else {
+            navigate('/opportunities');
+          }
+        }, 1500);
+      } else {
+        setApiError(data.message || 'Authentication failed. Please verify credentials.');
+      }
+    } catch (err) {
+      setApiError('Unable to connect to service. Please check connection and try again.');
+    } finally {
       setLoading(false);
-      setSuccess('Successfully authenticated! Directing you to opportunities portal...');
-      setTimeout(() => {
-        navigate('/');
-      }, 1500);
-    }, 1000);
+    }
   };
 
   return (
@@ -96,6 +122,16 @@ function LoginPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span>{success}</span>
+            </div>
+          )}
+
+          {/* API Error Banner */}
+          {apiError && (
+            <div id="login-error-banner" className="p-4 mb-6 rounded-2xl border border-red-100 bg-red-50 text-red-700 text-sm font-semibold flex items-center space-x-2">
+              <svg className="w-5 h-5 text-red-500 flex-shrink-0 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span>{apiError}</span>
             </div>
           )}
 

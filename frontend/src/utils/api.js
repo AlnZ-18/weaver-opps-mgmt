@@ -69,3 +69,27 @@ export const registerUser = async ({ name, email, password }) => {
   }
 };
 
+/**
+ * Authenticate user credentials and return secure JWT
+ * @param {Object} payload
+ * @param {string} payload.email - User login email address
+ * @param {string} payload.password - Secure password
+ * @returns {Promise<Object>} API JSON response containing success state, user context, and token
+ */
+export const loginUser = async ({ email, password }) => {
+  try {
+    const response = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('❌ API Error logging in user:', error);
+    throw error;
+  }
+};
+
+
