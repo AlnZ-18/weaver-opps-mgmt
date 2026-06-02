@@ -3,6 +3,7 @@ import { fetchOpportunities } from '../utils/api';
 import OpportunityCard from '../components/OpportunityCard';
 import OpportunitySkeleton from '../components/OpportunitySkeleton';
 import PaginationControls from '../components/PaginationControls';
+import Navbar from '../components/Navbar';
 
 function OpportunitiesPage() {
   // --- States ---
@@ -50,26 +51,9 @@ function OpportunitiesPage() {
   return (
     <div className="min-h-screen flex flex-col justify-between">
       
-      {/* Header section (Semantics & Unique ID) */}
-      <header id="app-header" className="sticky top-0 z-40 w-full glass-panel shadow-sm border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3 select-none">
-            {/* Minimal AIESEC Styled Logo Icon */}
-            <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-extrabold text-lg tracking-tighter shadow-md shadow-indigo-100">
-              A
-            </div>
-            <span className="font-bold text-slate-800 text-base tracking-wide uppercase">
-              AIESEC <span className="text-indigo-600 font-extrabold">Amaravati</span>
-            </span>
-          </div>
-          
-          <nav className="flex items-center space-x-6">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest bg-slate-100 px-3 py-1.5 rounded-full">
-              OPPORTUNITIES HUB
-            </span>
-          </nav>
-        </div>
-      </header>
+      {/* Dynamic Global Navigation Header */}
+      <Navbar />
+
 
       {/* Main Section */}
       <main id="app-main-content" className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">

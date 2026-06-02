@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchOpportunityById } from '../utils/api';
+import Navbar from '../components/Navbar';
 
 function OpportunityDetailsPage() {
   const { id } = useParams();
@@ -103,28 +104,9 @@ function OpportunityDetailsPage() {
   return (
     <div className="min-h-screen flex flex-col justify-between">
       
-      {/* Header section (Semantics & Unique ID) */}
-      <header id="app-header" className="sticky top-0 z-40 w-full glass-panel shadow-sm border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-3 select-none hover:opacity-90 transition-opacity">
-            <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-extrabold text-lg tracking-tighter">
-              A
-            </div>
-            <span className="font-bold text-slate-800 text-base tracking-wide uppercase">
-              AIESEC <span className="text-indigo-600 font-extrabold">Amaravati</span>
-            </span>
-          </Link>
-          <nav className="flex items-center space-x-6">
-            <Link
-              to="/"
-              id="back-header-link"
-              className="text-xs font-bold text-indigo-600 hover:text-indigo-700 bg-indigo-50 px-3.5 py-1.5 rounded-xl transition-all duration-150 active:scale-95"
-            >
-              ← Back to Listings
-            </Link>
-          </nav>
-        </div>
-      </header>
+      {/* Dynamic Global Navigation Header */}
+      <Navbar />
+
 
       {/* Main Section */}
       <main id="app-main-content" className="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Navbar from '../components/Navbar';
 
 function AdminDashboardPage() {
   const { user, logout } = useAuth();
@@ -14,33 +15,9 @@ function AdminDashboardPage() {
   return (
     <div className="min-h-screen flex flex-col justify-between">
       
-      {/* Header section (Semantics & Unique ID) */}
-      <header id="app-header" className="sticky top-0 z-40 w-full glass-panel shadow-sm border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3 select-none">
-            <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-extrabold text-lg tracking-tighter">
-              A
-            </div>
-            <span className="font-bold text-slate-800 text-base tracking-wide uppercase">
-              AIESEC <span className="text-indigo-600 font-extrabold">Amaravati</span>
-            </span>
-          </div>
-          
-          <nav className="flex items-center space-x-6">
-            <span className="text-xs font-bold text-amber-600 bg-amber-50 px-3.5 py-1.5 rounded-xl uppercase tracking-wider select-none border border-amber-100">
-              Admin Portal
-            </span>
-            <button
-              type="button"
-              id="admin-logout-btn"
-              onClick={handleLogout}
-              className="text-xs font-bold text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100/60 px-3.5 py-1.5 rounded-xl transition-all duration-150 active:scale-95 outline-none"
-            >
-              Log Out
-            </button>
-          </nav>
-        </div>
-      </header>
+      {/* Dynamic Global Navigation Header */}
+      <Navbar />
+
 
       {/* Main Section */}
       <main id="app-main-content" className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">

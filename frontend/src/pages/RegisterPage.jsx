@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerUser } from '../utils/api';
+import Navbar from '../components/Navbar';
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -104,19 +105,9 @@ function RegisterPage() {
   return (
     <div className="min-h-screen flex flex-col justify-between">
       
-      {/* Header section (Minimal & branding) */}
-      <header id="app-header" className="sticky top-0 z-40 w-full glass-panel shadow-sm border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center space-x-3 select-none">
-            <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-extrabold text-lg tracking-tighter">
-              A
-            </div>
-            <span className="font-bold text-slate-800 text-base tracking-wide uppercase">
-              AIESEC <span className="text-indigo-600 font-extrabold">Amaravati</span>
-            </span>
-          </Link>
-        </div>
-      </header>
+      {/* Dynamic Global Navigation Header */}
+      <Navbar />
+
 
       {/* Form Area */}
       <main id="app-main-content" className="flex-grow flex items-center justify-center px-4 py-16">
