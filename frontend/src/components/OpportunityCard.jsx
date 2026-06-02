@@ -1,12 +1,12 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 /**
  * Modern premium Opportunity Card display
  * @param {Object} props
  * @param {Object} props.opp - Opportunity model details
- * @param {function} props.onViewDetails - Callback function on click
  */
-const OpportunityCard = ({ opp, onViewDetails }) => {
+const OpportunityCard = ({ opp }) => {
   const { _id, title, programType, country, city, duration, stipend } = opp;
 
   // Program specific themes: GTa (Professional Amber/Gold), GV (Volunteer Violet/Indigo)
@@ -111,17 +111,17 @@ const OpportunityCard = ({ opp, onViewDetails }) => {
         </div>
       </div>
 
-      {/* View Details Action Button */}
-      <button
-        type="button"
+      {/* View Details Action Link */}
+      <Link
         id={`opp-btn-view-${_id}`}
-        onClick={() => onViewDetails(_id)}
-        className="w-full py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 transform bg-slate-900 text-white hover:bg-indigo-600 hover:shadow-lg hover:shadow-indigo-100 hover:-translate-y-0.5 active:translate-y-0 outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2"
+        to={`/opportunities/${_id}`}
+        className="w-full py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 transform bg-slate-900 text-white hover:bg-indigo-600 hover:shadow-lg hover:shadow-indigo-100 hover:-translate-y-0.5 active:translate-y-0 outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2 flex items-center justify-center"
       >
         View Details
-      </button>
+      </Link>
     </article>
   );
 };
 
 export default OpportunityCard;
+
